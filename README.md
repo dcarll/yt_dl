@@ -18,6 +18,12 @@ Uma ferramenta poderosa e elegante para baixar vídeos e áudios do YouTube, con
 ## 🛠️ Pré-requisitos
 
 Para o funcionamento correto do download de vídeos em alta resolução e conversão para MP3, é necessário ter o **FFmpeg** instalado no sistema ou o executável `ffmpeg.exe` na pasta raiz do projeto.
+-baixe pelo link abaixo
+-https://www.gyan.dev/ffmpeg/builds/packages/ffmpeg-2026-04-22-git-162ad61486-essentials_build.7z
+-Extrai os arquivos -> Navegue até a pasta bin e lá vai ter o arquivi "ffmpeg.exe"
+-Copie esse arquivo para a pasta do projeto, no mesmo nível do main.py
+
+
 
 ---
 
