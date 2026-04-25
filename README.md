@@ -17,66 +17,67 @@ Uma ferramenta poderosa e elegante para baixar vídeos e áudios do YouTube, con
 
 ## 🛠️ Pré-requisitos
 
-Para o funcionamento correto do download de vídeos em alta resolução e conversão para MP3, é necessário ter o **FFmpeg** instalado no sistema ou o executável `ffmpeg.exe` na pasta raiz do projeto.
--baixe pelo link abaixo
--https://www.gyan.dev/ffmpeg/builds/packages/ffmpeg-2026-04-22-git-162ad61486-essentials_build.7z
--Extrai os arquivos -> Navegue até a pasta bin e lá vai ter o arquivi "ffmpeg.exe"
--Copie esse arquivo para a pasta do projeto, no mesmo nível do main.py
+Para o funcionamento correto de download de vídeos em alta resolução e conversão para MP3, é necessário o **Python** e o executável **FFmpeg**.
 
-
+- **Python**: Instale a versão mais recente e **certifique-se de marcar a opção "Add Python to PATH"** durante a instalação.
+- **FFmpeg**: O nosso inicializador automático (`iniciar.bat`) fará o download e configurará o FFmpeg sozinho. Se você quiser fazer tudo manualmente, ele também pode ser baixado e colado na pasta raiz.
 
 ---
 
-## 🚀 Como configurar o ambiente
+## 🚀 Como Executar
 
-Siga os passos abaixo para preparar o ambiente e rodar o projeto localmente.
+Escolha uma das maneiras de execução abaixo de acordo com sua experiência!
 
-### 1. Clonar o repositório
+### 🌟 O Jeito Fácil (Apenas um clique / Recomendado)
+
+Na pasta do projeto, dê um duplo clique no arquivo **`iniciar.bat`**. 
+Ele é automatizado para fazer tudo por você:
+- Verifica a instalação do Python.
+- Configura e injeta as dependências/bibliotecas automaticamente através do arquivo de requisitos.
+- Procura o executável do **FFmpeg**. Se não achar, não se preocupe: fará o download e extração tudo em segundo plano!
+- Abre a aplicação na sua tela.
+
+### 🛠️ O Jeito Manual (Via Terminal / Venv)
+
+Caso você tenha conhecimentos técnicos e deseje usar pela linha de comando:
+
+#### 1. Clonar o Repositório
 ```bash
 git clone https://github.com/dcarll/yt_dl.git
 cd yt_dl
 ```
 
-### 2. Criar um Ambiente Virtual (Venv)
-O uso de um ambiente virtual é recomendado para manter as dependências do projeto isoladas.
-
+#### 2. Criar e Ativar Ambiente Virtual
+Criar um ambiente isola as dependências desse projeto do resto do seu computador.
 **No Windows:**
 ```bash
 python -m venv .venv
+.venv\Scripts\activate
 ```
-
 **No Linux/macOS:**
 ```bash
 python3 -m venv .venv
-```
-
-### 3. Ativar o Ambiente Virtual
-
-**No Windows:**
-```bash
-.venv\Scripts\activate
-```
-
-**No Linux/macOS:**
-```bash
 source .venv/bin/activate
 ```
 
-### 4. Instalar Dependências
-Com o ambiente virtual ativo, instale os pacotes necessários:
+#### 3. Instalar Dependências Necessárias
 ```bash
 pip install -r requirements.txt
+```
+
+#### 4. Configurar FFmpeg Manualmente
+- Baixe o pacote oficial [através deste link](https://www.gyan.dev/ffmpeg/builds/packages/ffmpeg-2026-04-22-git-162ad61486-essentials_build.7z).
+- Extraia os arquivos do `.7z`, abra a pasta extraída, entre em `bin` e pegue o arquivo **`ffmpeg.exe`**.
+- Copie e cole na mesma pasta de onde o `main.py` repousa.
+
+#### 5. Inicialização
+```bash
+python main.py
 ```
 
 ---
 
 ## 💻 Como usar
-
-Após configurar o ambiente, basta executar o arquivo principal:
-
-```bash
-python main.py
-```
 
 1. **🎬 VÍDEOS:** Cole o link, clique em **Buscar** para ver as qualidades, selecione uma e clique em **Baixar**.
 2. **🎵 ÁUDIOS:** Mude para a aba de Áudio, cole o link e clique em **Baixar MP3**.
