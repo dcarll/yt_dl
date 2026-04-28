@@ -96,25 +96,8 @@ async def main(page: ft.Page):
     page.theme_mode = ft.ThemeMode.LIGHT
     page.padding = 0
 
-    # ── FFmpeg Discovery ─────────────────────────
-    ffmpeg_path = [None] 
-
-    def check_ffmpeg():
-        local_exe = "ffmpeg.exe" if os.name == "nt" else "ffmpeg"
-        paths_to_check = [get_resource_path(local_exe), os.path.abspath(local_exe)]
-        for p in paths_to_check:
-            if os.path.exists(p):
-                ffmpeg_path[0] = str(p)
-                return True
-        try:
-            subprocess.run(["ffmpeg", "-version"], capture_output=True, check=True)
-            ffmpeg_path[0] = "ffmpeg"
-            return True
-        except:
-            pass
-        return False
-
-    has_ffmpeg = check_ffmpeg()
+    # ── Mobile/Native Mode (No FFmpeg) ───────────
+    # FFmpeg dependencies removed for mobile compatibility.
 
     # ── UI Elements ──────────────────────────────
     snack_bar = ft.SnackBar(ft.Text(""), bgcolor=SUCCESS)
@@ -249,7 +232,7 @@ async def main(page: ft.Page):
             page.run_task(snack, m, ERROR_COLOR)
             page.run_thread(page.update)
 
-        downloader.download_video(url, fmt, folder, progress, done, error, ffmpeg_path[0])
+        downloader.download_video(url, fmt, folder, progress, done, error)
     
     dl_btn.on_click = on_dl
     open_btn.on_click = lambda e: open_folder(vid_path.value.strip())
@@ -272,24 +255,23 @@ async def main(page: ft.Page):
         pv_prog.value = 0
         page.update()
         
-        downloader.download_playlist_video(url, "bestvideo[height<=1080]+bestaudio/best", folder, 
+        downloader.download_playlist_video(url, "best[height<=720]", folder, 
             lambda p,s,eta: (setattr(pv_prog, "value", p/100), setattr(pv_stat, "value", f"{p:.1f}% | {s}"), page.run_thread(page.update)),
             lambda m: (page.run_task(snack, m), setattr(pv_dl, "disabled", False), page.run_thread(page.update)),
-            lambda m: (page.run_task(snack, m, ERROR_COLOR), setattr(pv_dl, "disabled", False), page.run_thread(page.update)),
-            ffmpeg_path[0])
+            lambda m: (page.run_task(snack, m, ERROR_COLOR), setattr(pv_dl, "disabled", False), page.run_thread(page.update)))
     pv_dl.on_click = on_pv_dl
     pv_open.on_click = lambda e: open_folder(pv_path.value.strip())
 
     # ══════════════════════════════════════════════
     #  TAB AUDIO
     # ══════════════════════════════════════════════
-    aud_url  = make_url_field("Link para converter em MP3...")
+    aud_url  = make_url_field("Link para baixar o áudio...")
     aud_path = make_path_field("Salvar áudio em")
     pick_aud = ft.IconButton(ft.Icons.FOLDER_OPEN, on_click=lambda _: open_picker(aud_path), tooltip="Alterar pasta")
     
     aud_prog = ft.ProgressBar(value=0, color=ACCENT, bgcolor="#eeeeee", height=8)
     aud_stat = ft.Text("", color=TEXT_SECONDARY, size=12)
-    aud_dl   = LabelButton("🎵 Baixar MP3")
+    aud_dl   = LabelButton("🎵 Baixar Áudio (M4A)")
     aud_open = LabelButton("📂 Abrir Pasta", primary=False, icon=ft.Icons.FOLDER_OPEN)
 
     async def on_aud_dl(e):
@@ -303,8 +285,7 @@ async def main(page: ft.Page):
         downloader.download_audio(url, folder, 
             lambda p,s,eta: (setattr(aud_prog, "value", p/100), setattr(aud_stat, "value", f"{p:.1f}% | {s}"), page.run_thread(page.update)),
             lambda m: (page.run_task(snack, m), setattr(aud_dl, "disabled", False), page.run_thread(page.update)),
-            lambda m: (page.run_task(snack, m, ERROR_COLOR), setattr(aud_dl, "disabled", False), page.run_thread(page.update)),
-            ffmpeg_path[0])
+            lambda m: (page.run_task(snack, m, ERROR_COLOR), setattr(aud_dl, "disabled", False), page.run_thread(page.update)))
     aud_dl.on_click = on_aud_dl
     aud_open.on_click = lambda e: open_folder(aud_path.value.strip())
 
@@ -345,7 +326,7 @@ async def main(page: ft.Page):
 
     tab_a_view = ft.Container(
         content=ft.Column([
-            card("Áudio MP3", [
+            card("Áudio M4A", [
                 aud_url, 
                 ft.Row([aud_path, pick_aud], spacing=10),
                 aud_prog, aud_stat,
@@ -377,14 +358,7 @@ async def main(page: ft.Page):
         expand=True
     )
 
-    banner = ft.Container(
-        content=ft.Row([
-            ft.Icon(ft.Icons.WARNING, color="orange"),
-            ft.Text("FFmpeg não encontrado! Algumas qualidades podem falhar.", color=TEXT_PRIMARY, expand=True),
-        ]),
-        bgcolor="#fff4e5", padding=15, border_radius=10, 
-        visible=not has_ffmpeg, margin=ft.Margin(20, 10, 20, 0)
-    )
+    # Banner removed as FFmpeg is no longer used
 
     header = ft.Container(
         content=ft.Row([
@@ -394,7 +368,7 @@ async def main(page: ft.Page):
         padding=ft.Padding(25, 20, 25, 10), bgcolor=SURFACE, border=ft.Border(bottom=ft.BorderSide(1, BORDER))
     )
 
-    page.add(header, banner, tabs_control)
+    page.add(header, tabs_control)
 
 
 if __name__ == "__main__":

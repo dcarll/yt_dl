@@ -25,14 +25,14 @@ def fetch_formats(url: str) -> list[dict]:
     seen = set()
 
     for f in info.get("formats", []):
-        # Only keep formats that have both video and reasonable quality
+        # Only keep formats that have both video and audio (no FFmpeg needed)
         vcodec = f.get("vcodec", "none")
         acodec = f.get("acodec", "none")
         height = f.get("height")
         ext = f.get("ext", "?")
         format_id = f.get("format_id", "")
 
-        if vcodec == "none" or not height:
+        if vcodec == "none" or acodec == "none" or not height:
             continue
 
         key = (height, ext)
@@ -86,9 +86,8 @@ def download_video(url: str, format_id: str, output_path: str, progress_cb, done
     def run():
         try:
             ydl_opts = {
-                "format": f"{format_id}+bestaudio/best[height<={format_id}]/{format_id}",
+                "format": format_id,
                 "outtmpl": f"{output_path}/%(title)s.%(ext)s",
-                "merge_output_format": "mp4",
                 "quiet": True,
                 "no_warnings": True,
                 "noplaylist": True,
@@ -96,8 +95,6 @@ def download_video(url: str, format_id: str, output_path: str, progress_cb, done
                 "socket_timeout": 5,
                 "progress_hooks": [_make_progress_hook(lambda p, s, e, st: progress_cb(p, s, e))],
             }
-            if ffmpeg_path:
-                ydl_opts["ffmpeg_location"] = ffmpeg_path
                 
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 ydl.download([url])
@@ -115,13 +112,8 @@ def download_audio(url: str, output_path: str, progress_cb, done_cb, error_cb, f
     def run():
         try:
             ydl_opts = {
-                "format": "bestaudio/best",
+                "format": "bestaudio[ext=m4a]/bestaudio",
                 "outtmpl": f"{output_path}/%(title)s.%(ext)s",
-                "postprocessors": [{
-                    "key": "FFmpegExtractAudio",
-                    "preferredcodec": "mp3",
-                    "preferredquality": "192",
-                }],
                 "quiet": True,
                 "no_warnings": True,
                 "noplaylist": True,
@@ -129,8 +121,6 @@ def download_audio(url: str, output_path: str, progress_cb, done_cb, error_cb, f
                 "socket_timeout": 5,
                 "progress_hooks": [_make_progress_hook(lambda p, s, e, st: progress_cb(p, s, e))],
             }
-            if ffmpeg_path:
-                ydl_opts["ffmpeg_location"] = ffmpeg_path
 
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 ydl.download([url])
@@ -148,7 +138,6 @@ def download_playlist_video(url: str, format_spec: str, output_path: str, progre
             ydl_opts = {
                 "format": format_spec,
                 "outtmpl": f"{output_path}/%(playlist_index)s - %(title)s.%(ext)s",
-                "merge_output_format": "mp4",
                 "quiet": True,
                 "no_warnings": True,
                 "check_formats": False,
@@ -156,8 +145,6 @@ def download_playlist_video(url: str, format_spec: str, output_path: str, progre
                 "progress_hooks": [_make_progress_hook(lambda p, s, e, st: progress_cb(p, s, e))],
                 "ignoreerrors": True,
             }
-            if ffmpeg_path:
-                ydl_opts["ffmpeg_location"] = ffmpeg_path
 
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 ydl.download([url])
@@ -173,13 +160,8 @@ def download_playlist_audio(url: str, output_path: str, progress_cb, done_cb, er
     def run():
         try:
             ydl_opts = {
-                "format": "bestaudio/best",
+                "format": "bestaudio[ext=m4a]/bestaudio",
                 "outtmpl": f"{output_path}/%(playlist_index)s - %(title)s.%(ext)s",
-                "postprocessors": [{
-                    "key": "FFmpegExtractAudio",
-                    "preferredcodec": "mp3",
-                    "preferredquality": "192",
-                }],
                 "quiet": True,
                 "no_warnings": True,
                 "check_formats": False,
@@ -187,8 +169,6 @@ def download_playlist_audio(url: str, output_path: str, progress_cb, done_cb, er
                 "progress_hooks": [_make_progress_hook(lambda p, s, e, st: progress_cb(p, s, e))],
                 "ignoreerrors": True,
             }
-            if ffmpeg_path:
-                ydl_opts["ffmpeg_location"] = ffmpeg_path
 
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 ydl.download([url])
